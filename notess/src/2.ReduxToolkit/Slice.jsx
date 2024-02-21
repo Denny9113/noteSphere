@@ -3,12 +3,13 @@ import { createSlice, nanoid } from "@reduxjs/toolkit";
 const initialState = {
   clickValue: [
     {
-      id: 1,
+      id: '1',
       Title: "HI I'AM SAKIB",
       Text: "Welcome to my project NoteSphere. a full fledge clone of google keep ",
       color: "white",
       Img: [[]],
       label: [{ id: "1", name: "", isChecked: false }],
+      archive: false
     },
   ],
 
@@ -24,7 +25,7 @@ const initialState = {
   color: {
     color: "white",
   },
-  Img: [{ id: "first", img: "" }],
+  Img: [{ id: "", img: "" }],
 
   label: [{ id: 1, name: "", isChecked: false }],
   toggleValue: [{ toggleValue: false }],
@@ -109,28 +110,23 @@ export const notesSlice = createSlice({
     },
 
     addImg: (state, action) => {
-      // payload hasid: id, img, for, noteID,
-      const payload = action.payload;
+      // payload has: id, img, for, noteID,
+      let payload = action.payload;
       if (payload.for === "createNote") {
         payload ? state.Img.push(payload) : (state.Img = []);
         console.log("for CreateNotes");
       }
 
       if (payload.for === "note")
-        state.clickValue.map((eachO) => {
-          if (eachO.id === payload.noteID) {
-            eachO.Img.push(payload);
+        state.clickValue.map((each) => {
+          if (each.id === payload.noteID) {
+            each.Img.push(payload);
             console.log("for notes");
             console.log(payload.noteID);
           }
           return;
         });
     },
-
-    // addImgForNote: (state, action) => {
-    //   // payload has noteID
-    //   const payload = action.payload;
-    // },
 
     deleteLabels: (state, action) => {
       const payload = action.payload;
@@ -171,6 +167,18 @@ export const notesSlice = createSlice({
       });
     },
 
+    archiveNote: (state, action) => {
+      // payload has noteID
+      const payload = action.payload;
+
+      state.clickValue.forEach((each) => {
+        if (each.id === payload) {
+          each.archive = !each.archive
+        }
+      })
+
+    },
+
     deleteNote: (state, action) => {
       state.clickValue = state.clickValue.filter(
         (each) => each.id !== action.payload
@@ -189,6 +197,7 @@ export const {
   addLabel,
   addImg,
   handleCheckboxChange,
+  archiveNote,
   deleteLabels,
   deleteImg,
   deleteImgForNote,

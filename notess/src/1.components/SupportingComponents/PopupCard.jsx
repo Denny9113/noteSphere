@@ -12,7 +12,8 @@ import {
   toggleValue,
 } from "../../2.ReduxToolkit/Slice";
 import AdjusInput from "./AdjusInput";
-import CreateNotes from "../CreateNotes/CreateNotes";
+import AddImg from "./AddImg";
+
 
 function PopupCard({ cardData, Title, Text, refForId, Color }) {
   const [bgOptionVisible, setBgOptionVisible] = useState(false);
@@ -218,8 +219,12 @@ function PopupCard({ cardData, Title, Text, refForId, Color }) {
         </div>
 
         <div className="mr-3 sm:mr-7">
-          <Icon icon="fluent:image-24-regular" color="#4a5568" height={18} />
+          <label className="" htmlFor="addImg">
+            <Icon icon="fluent:image-24-regular" color="#4a5568" height={18} />
+          </label>
+          <AddImg for1={"note"} noteID={cardData.id} />
         </div>
+
         <div className="mr-3 sm:mr-7">
           <Icon icon="bi:archive" color="#4a5568" height={18} />
         </div>

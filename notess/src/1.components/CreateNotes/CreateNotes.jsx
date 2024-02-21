@@ -54,6 +54,7 @@ function CreateNotes(props) {
         color: color,
         label: labels,
         Img: Img,
+        archive: false
       })
     );
 
@@ -79,7 +80,7 @@ function CreateNotes(props) {
   const handleOutsideClick = (event) => {
     // event.stopPropagation();
     if (inputRef.current && !inputRef.current.contains(event.target)) {
-      setIsEditing(false);
+      // setIsEditing(false);
       //     setBgVisible(false);
       //     setMoreOption(false)
       //     // setColorValue('white')
@@ -288,7 +289,7 @@ function CreateNotes(props) {
                           height={18}
                         />
                       </label>
-                      <AddImg for1={"createNote"} noteID="" />
+                      <AddImg for1={"createNote"} />
                     </TooltipItem>
                   </div>
 

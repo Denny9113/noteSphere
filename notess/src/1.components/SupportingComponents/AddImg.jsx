@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addImg } from "../../2.ReduxToolkit/Slice";
 import { nanoid } from "@reduxjs/toolkit";
@@ -18,13 +18,13 @@ function AddImg({ props, for1, noteID }) {
         if (DuplicateImg) {
           alert("Image is already exist");
         } else {
-          console.log(idForNote);
+          console.log(noteID);
           dispatch(
             addImg({
               id: nanoid(),
               img: reader.result,
               for: for1,
-              noteID: idForNote,
+              noteID: noteID,
             })
           );
         }
@@ -36,6 +36,11 @@ function AddImg({ props, for1, noteID }) {
   const handleDeleteImage = () => {
     setImage([]);
   };
+
+  useEffect(() => {
+    console.log(noteID);
+  }, ['from AddImg: ',noteID])
+  
 
   return (
     <>

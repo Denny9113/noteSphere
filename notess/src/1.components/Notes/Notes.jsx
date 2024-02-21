@@ -7,12 +7,12 @@ import {
   toggleValue,
   deleteLabels,
   deleteImgForNote,
+  archiveNote,
 } from "../../2.ReduxToolkit/Slice";
 import { Icon } from "@iconify/react";
 import PopupCard from "../SupportingComponents/PopupCard";
 import TooltipItem from "../SupportingComponents/Tooltip";
 import BackgroundOptions from "../SupportingComponents/BackgroundOptions";
-// import { img1 } from '../../img/img';
 import MoreOption from "../SupportingComponents/MoreOption";
 import { img1, img2, img3 } from "../../img/img";
 import AddImg from "../SupportingComponents/AddImg";
@@ -32,7 +32,6 @@ function Notes() {
   const Imgs = useSelector((state) => state.clickToShow.toggleValue.Img);
   const [id, setid] = useState("");
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const idForNote = useSelector((state) => state.clickToShow.id);
   const refForId = useRef([]);
 
   const dispatch = useDispatch();
@@ -58,11 +57,11 @@ function Notes() {
             if (each.id == every.id) {
               console.log(
                 "match :: each.id is: " +
-                  each.id +
-                  " | every.id is: " +
-                  every.id +
-                  "each.color is: " +
-                  each.color
+                each.id +
+                " | every.id is: " +
+                every.id +
+                "each.color is: " +
+                each.color
               );
               dispatch(idForColor(each.id));
             }
@@ -102,7 +101,8 @@ function Notes() {
   // Updates mouseOover state and set the opacity of an iconDiv based on conditions.
   const mouseOverfn = (condition, each) => {
     setid(each.id);
-
+    // console.log(each.id);
+    // console.log(id);
     const isVisible = bgVisible || moreListVisible;
     if (!isVisible && condition) {
       setMouseOver(true);
@@ -119,6 +119,7 @@ function Notes() {
     if (!isVisible && !condition) {
       setMouseOver(false);
       document.getElementById(`${each.id}iconDiv`).style.opacity = "0%";
+      // setid('id removed')
     }
   };
 
@@ -149,6 +150,10 @@ function Notes() {
     dispatch(toggleValue(false));
     dispatchIdOnlick();
   }, []);
+
+  useEffect(() => {
+    console.log("id form useeffect is: ", id);
+  }, [mouseOverfn]);
 
   // Manages the visibility of <BackgroundOptions /> and <MoreOption /> components.
   useEffect(() => {
@@ -212,9 +217,8 @@ function Notes() {
       ) : null}
 
       <div
-        className={`w-full flex justify-center mt-6 px-10  ${
-          toggleValue0 && "opacity-20"
-        } `}
+        className={`w-full flex justify-center mt-6 px-10  ${toggleValue0 && "opacity-20"
+          } `}
       >
         <div
           className={`w-fit columns-1 gap-x-2 auto-cols-min
@@ -237,18 +241,17 @@ function Notes() {
                 onMouseEnter={() => mouseOverfn(true, each)}
                 onMouseLeave={() => mouseOverfn(false, each)}
                 className={`
-                                ${
-                                  each.color === "white" ? "border" : null
-                                } bg-[${each.color}] bg-cover bg-center
+                                ${each.color === "white" ? "border" : null
+                  } bg-[${each.color}] bg-cover bg-center
                                  block  break-inside-avoid  border-gray-200 w-full 
                                  rounded-md h-fit  mx-1 p-3 mb-2 leading-tight tracking-tight transition-all  hover:shadow-md
                                  `}
               >
                 {/* image goas hear */}
-                <div className="pinterest-grid-container w-full mb-3">
+                <div className="pinterest-grid-container w-full ">
                   {each.Img.filter((i) => i.id).map((eachO, index) => {
                     return (
-                      <div key={index} className="note-grid">
+                      <div key={index} className="note-grid mb-3">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -348,10 +351,6 @@ function Notes() {
                   </div>
                   <div
                     className="mr-5"
-                    onClick={() => {
-                      dispatchIdOnlick();
-                      console.log(idForNote);
-                    }}
                   >
                     <TooltipItem position="bottom" tooltipsText="Add image">
                       <label className="" htmlFor="addImg">
@@ -361,13 +360,23 @@ function Notes() {
                           height={18}
                         />
                       </label>
-                      <AddImg for1={"note"} />
+                      <AddImg for1={"note"} noteID={id} />
                     </TooltipItem>
                   </div>
 
-                  <div className="mr-5 ">
+                  <div
+                    onClick={() => { 
+                      dispatch(archiveNote(each.id)); 
+                      console.log(each.id);
+                    }}
+                    className={`mr-5 ${each.archive === true ? 'bg-black' : "bg-white"}`}
+                  >
                     <TooltipItem position="bottom" tooltipsText="Archive">
-                      <Icon icon="bi:archive" color="#4a5568" height={18} />
+                      <Icon
+
+                        icon="bi:archive"
+                        color="#4a5568"
+                        height={18} />
                     </TooltipItem>
                   </div>
 
