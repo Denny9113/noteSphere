@@ -17,7 +17,7 @@ import MoreOption from "../SupportingComponents/MoreOption";
 import { img1, img2, img3 } from "../../img/img";
 import AddImg from "../SupportingComponents/AddImg";
 
-function Notes() {
+function Notes({ isCreateNoteVisible = true, archive = false, labelName = null }) {
   const [cardText, setCardText] = useState("");
   const [cardData, setCardData] = useState({});
   const [cardTitle, setCardTitle] = useState("");
@@ -37,13 +37,11 @@ function Notes() {
   const dispatch = useDispatch();
 
   const handleClick = (each) => {
-    // console.log(each.id);
     dispatch(showCard(each.id));
     setCardText(each.Text);
     setCardTitle(each.Title);
     setCardColor(each.color);
     setCardImg(each.Img);
-    // console.log(each)
     setCardData(each);
     handleTriggerClick();
   };
@@ -53,7 +51,7 @@ function Notes() {
       refForId.current.map((every) => {
         every?.addEventListener("click", () => {
           value.map((each) => {
-            // console.log(each.color)
+
             if (each.id == every.id) {
               console.log(
                 "match :: each.id is: " +
@@ -101,8 +99,7 @@ function Notes() {
   // Updates mouseOover state and set the opacity of an iconDiv based on conditions.
   const mouseOverfn = (condition, each) => {
     setid(each.id);
-    // console.log(each.id);
-    // console.log(id);
+
     const isVisible = bgVisible || moreListVisible;
     if (!isVisible && condition) {
       setMouseOver(true);
@@ -152,8 +149,8 @@ function Notes() {
   }, []);
 
   useEffect(() => {
-    console.log("id form useeffect is: ", id);
-  }, [mouseOverfn]);
+    console.log('THE VALUE IS: ', value);
+  }, [value]);
 
   // Manages the visibility of <BackgroundOptions /> and <MoreOption /> components.
   useEffect(() => {
@@ -171,7 +168,7 @@ function Notes() {
       const opacity = visibility ? "100%" : "0%";
 
       value.forEach((each) => {
-        document.getElementById(`${each.id}iconDiv`).style.opacity = opacity;
+        document.getElementById(`${each.id}iconDiv`) ? document.getElementById(`${each.id}iconDiv`).style.opacity = opacity : null
       });
     };
 
@@ -188,13 +185,14 @@ function Notes() {
       id="NoteDiv"
       className={`w-[calc(100%-4rem)] h-screen bigdiv ml-16 mt-24 `}
     >
-      <CreateNotes />
+      {isCreateNoteVisible && (<CreateNotes />)}
 
       {bgVisible ? (
         <div
           id="BgOptionParent"
           style={{
-            position: "absolute",
+            position: "fixed",
+            zIndex: '49',
             top: position.y + "px",
             left: position.x + "px",
           }}
@@ -207,7 +205,8 @@ function Notes() {
         <div
           id="moreOptionParent"
           style={{
-            position: "absolute",
+            position: "fixed",
+            zIndex: '49',
             top: position.y + "px",
             left: position.x + "px",
           }}
@@ -228,175 +227,351 @@ function Notes() {
                     xl:columns-5
                     2xl:columns-5`}
         >
-          {value.map((each, index) => (
-            <div
-              key={`${each.id}17-1-2024:05:03`}
-              id={each.id}
-              ref={(el) => (refForId.current[index] = el)}
-              className={``}
-              onClick={() => handleClick(each)}
-            >
-              <div
-                id={`${each.id}innerDiv`}
-                onMouseEnter={() => mouseOverfn(true, each)}
-                onMouseLeave={() => mouseOverfn(false, each)}
-                className={`
+          {value.map((each, index) => {
+            if (each.archive === archive) {
+              if (!labelName) {
+                return (
+                  <div
+                    key={`${each.id}17-1-2024:05:03`}
+                    id={each.id}
+                    ref={(el) => (refForId.current[index] = el)}
+                    className={``}
+                    onClick={() => handleClick(each)}
+                  >
+                    <div
+                      id={`${each.id}innerDiv`}
+                      onMouseEnter={() => mouseOverfn(true, each)}
+                      onMouseLeave={() => mouseOverfn(false, each)}
+                      className={`
                                 ${each.color === "white" ? "border" : null
-                  } bg-[${each.color}] bg-cover bg-center
+                        } bg-[${each.color}] bg-cover bg-center
                                  block  break-inside-avoid  border-gray-200 w-full 
                                  rounded-md h-fit  mx-1 p-3 mb-2 leading-tight tracking-tight transition-all  hover:shadow-md
                                  `}
-              >
-                {/* image goas hear */}
-                <div className="pinterest-grid-container w-full ">
-                  {each.Img.filter((i) => i.id).map((eachO, index) => {
-                    return (
-                      <div key={index} className="note-grid mb-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            dispatch(
-                              deleteImgForNote({
-                                id: eachO.id,
-                                noteID: each.id,
-                              })
+                    >
+                      {/* image goas hear */}
+                      <div className="pinterest-grid-container w-full ">
+                        {each.Img.filter((i) => i.id).map((eachO, index) => {
+                          return (
+                            <div key={index} className="note-grid mb-3">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  dispatch(
+                                    deleteImgForNote({
+                                      id: eachO.id,
+                                      noteID: each.id,
+                                    })
+                                  );
+                                }}
+                                className="bg-black text-white absolute p-1 rounded bg-opacity-30 hover:bg-opacity-100 transition-all text-xs"
+                              >
+                                <Icon icon="ic:baseline-delete" />
+                              </button>
+                              <div className="note-grid-item">
+                                <img
+                                  src={eachO.img}
+                                  className="rounded w-full h-auto"
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <p className="mb-3  text-black text-[1.200rem]">{each.Title}</p>
+                      <p className="">{each.Text}</p>
+
+                      {/* labels goes hear */}
+                      <div className="flex flex-wrap mt-1 ">
+                        {each.label.map((each1) => {
+                          if (each1.isChecked) {
+                            return (
+                              <button
+                                key={each1.id}
+                                className="transition-all text-xs text-black/70 font-bold m-1 px-3   
+                                                    rounded-full bg-black/15 relative"
+                                value={each1.name}
+                                onMouseEnter={() =>
+                                  mouseOverfnForLabel(true, `${each.id}+${each1.id}`)
+                                }
+                                onMouseLeave={() =>
+                                  mouseOverfnForLabel(false, `${each.id}+${each1.id}`)
+                                }
+                              >
+                                <div className="flex">
+                                  <div
+                                    id={`${each.id}+${each1.id}text`}
+                                    className={`transition-all py-1 opacity-100`}
+                                  >
+                                    {each1.name}
+                                  </div>
+                                  <div
+                                    onClick={(e) =>
+                                      deletelabelBtn(e, each.id, each1.id)
+                                    }
+                                    id={`${each.id}+${each1.id}closeBtn`}
+                                    className={`transition-all  absolute opacity-0 right-0  p-1 mr-0 
+                                                            bg-transparent w-full text-center rounded-full`}
+                                  >
+                                    &#x2715;
+                                  </div>
+                                </div>
+                              </button>
                             );
-                          }}
-                          className="bg-black text-white absolute p-1 rounded bg-opacity-30 hover:bg-opacity-100 transition-all text-xs"
+                          }
+                        })}
+                      </div>
+
+                      {/* all the icons are hear */}
+                      <div
+                        onClick={(e) => e.stopPropagation()}
+                        id={`${each.id}iconDiv`}
+                        className={`amazingIconDiv active:border flex mt-1 items-center justify-center bg-white rounded-md px-2 pt-1 opacity-0 transition-all
+                  `}
+                      >
+                        <div className="mr-5 ">
+                          <TooltipItem position="bottom" tooltipsText="Remind me">
+                            <Icon icon="bx:bell-plus" color="#4a5568" height={18} />
+                          </TooltipItem>
+                        </div>
+                        <div
+                          id="sakib"
+                          className="mr-5 relative"
+                          onClick={(event) => BGOptionButton(event)}
                         >
-                          <Icon icon="ic:baseline-delete" />
-                        </button>
-                        <div className="note-grid-item">
-                          <img
-                            src={eachO.img}
-                            className="rounded w-full h-auto"
-                          />
+                          <TooltipItem
+                            position="bottom"
+                            tooltipsText="Background options"
+                          >
+                            <Icon
+                              icon="tabler:color-filter"
+                              color="#4a5568"
+                              height={18}
+                            />
+                          </TooltipItem>
+                        </div>
+                        <div
+                          className="mr-5"
+                        >
+                          <TooltipItem position="bottom" tooltipsText="Add image">
+                            <label className="" htmlFor="addImg">
+                              <Icon
+                                icon="fluent:image-24-regular"
+                                color="#4a5568"
+                                height={18}
+                              />
+                            </label>
+                            <AddImg for1={"note"} noteID={id} />
+                          </TooltipItem>
+                        </div>
+
+                        <div
+                          onClick={() => {
+                            dispatch(archiveNote(each.id));
+                          }}
+                          className={`mr-5 ${each.archive === true ? 'bg-black' : "bg-white"}`}
+                        >
+                          <TooltipItem position="bottom" tooltipsText="Archive">
+                            <Icon
+
+                              icon="bi:archive"
+                              color="#4a5568"
+                              height={18} />
+                          </TooltipItem>
+                        </div>
+
+                        <div
+                          id={`${each.id}moreOptionDiv`}
+                          className="relative"
+                          onClick={(event) => moreOptionButton(event, each.id)}
+                        >
+                          <TooltipItem position="bottom" tooltipsText="More">
+                            <Icon
+                              icon="icon-park-outline:more-four"
+                              color="#4a5568"
+                              height={18}
+                            />
+                          </TooltipItem>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-
-                <p className="mb-3  text-black text-[1.200rem]">{each.Title}</p>
-                <p className="">{each.Text}</p>
-
-                {/* labels goes hear */}
-                <div className="flex flex-wrap mt-1 ">
-                  {each.label.map((each1) => {
-                    if (each1.isChecked) {
-                      return (
-                        <button
-                          key={each1.id}
-                          className="transition-all text-xs text-black/70 font-bold m-1 px-3   
-                                                    rounded-full bg-black/15 relative"
-                          value={each1.name}
-                          onMouseEnter={() =>
-                            mouseOverfnForLabel(true, `${each.id}+${each1.id}`)
-                          }
-                          onMouseLeave={() =>
-                            mouseOverfnForLabel(false, `${each.id}+${each1.id}`)
-                          }
-                        >
-                          <div className="flex">
-                            <div
-                              id={`${each.id}+${each1.id}text`}
-                              className={`transition-all py-1 opacity-100`}
-                            >
-                              {each1.name}
-                            </div>
-                            <div
-                              onClick={(e) =>
-                                deletelabelBtn(e, each.id, each1.id)
-                              }
-                              id={`${each.id}+${each1.id}closeBtn`}
-                              className={`transition-all  absolute opacity-0 right-0  p-1 mr-0 
-                                                            bg-transparent w-full text-center rounded-full`}
-                            >
-                              &#x2715;
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    }
-                  })}
-                </div>
-
-                {/* all the icons are hear */}
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  id={`${each.id}iconDiv`}
-                  className={`amazingIconDiv active:border flex mt-1 items-center justify-center bg-white rounded-md px-2 pt-1 opacity-0 transition-all
-                  `}
-                >
-                  <div className="mr-5 ">
-                    <TooltipItem position="bottom" tooltipsText="Remind me">
-                      <Icon icon="bx:bell-plus" color="#4a5568" height={18} />
-                    </TooltipItem>
+                    </div>
                   </div>
+                )
+              }
+              // each.label.some((l) => l.name === labelName)
+              if (labelName && each.label.some(l => l.name === labelName) && each.label.some(l => l.isChecked)) {
+                return (
                   <div
-                    id="sakib"
-                    className="mr-5 relative"
-                    onClick={(event) => BGOptionButton(event)}
+                    key={`${each.id}17-1-2024:05:03`}
+                    id={each.id}
+                    ref={(el) => (refForId.current[index] = el)}
+                    className={``}
+                    onClick={() => handleClick(each)}
                   >
-                    <TooltipItem
-                      position="bottom"
-                      tooltipsText="Background options"
+                    <div
+                      id={`${each.id}innerDiv`}
+                      onMouseEnter={() => mouseOverfn(true, each)}
+                      onMouseLeave={() => mouseOverfn(false, each)}
+                      className={`
+                                    ${each.color === "white" ? "border" : null
+                        } bg-[${each.color}] bg-cover bg-center
+                                     block  break-inside-avoid  border-gray-200 w-full 
+                                     rounded-md h-fit  mx-1 p-3 mb-2 leading-tight tracking-tight transition-all  hover:shadow-md
+                                     `}
                     >
-                      <Icon
-                        icon="tabler:color-filter"
-                        color="#4a5568"
-                        height={18}
-                      />
-                    </TooltipItem>
-                  </div>
-                  <div
-                    className="mr-5"
-                  >
-                    <TooltipItem position="bottom" tooltipsText="Add image">
-                      <label className="" htmlFor="addImg">
-                        <Icon
-                          icon="fluent:image-24-regular"
-                          color="#4a5568"
-                          height={18}
-                        />
-                      </label>
-                      <AddImg for1={"note"} noteID={id} />
-                    </TooltipItem>
-                  </div>
+                      {/* image goas hear */}
+                      <div className="pinterest-grid-container w-full ">
+                        {each.Img.filter((i) => i.id).map((eachO, index) => {
+                          return (
+                            <div key={index} className="note-grid mb-3">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  dispatch(
+                                    deleteImgForNote({
+                                      id: eachO.id,
+                                      noteID: each.id,
+                                    })
+                                  );
+                                }}
+                                className="bg-black text-white absolute p-1 rounded bg-opacity-30 hover:bg-opacity-100 transition-all text-xs"
+                              >
+                                <Icon icon="ic:baseline-delete" />
+                              </button>
+                              <div className="note-grid-item">
+                                <img
+                                  src={eachO.img}
+                                  className="rounded w-full h-auto"
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
 
-                  <div
-                    onClick={() => { 
-                      dispatch(archiveNote(each.id)); 
-                      console.log(each.id);
-                    }}
-                    className={`mr-5 ${each.archive === true ? 'bg-black' : "bg-white"}`}
-                  >
-                    <TooltipItem position="bottom" tooltipsText="Archive">
-                      <Icon
+                      <p className="mb-3  text-black text-[1.200rem]">{each.Title}</p>
+                      <p className="">{each.Text}</p>
 
-                        icon="bi:archive"
-                        color="#4a5568"
-                        height={18} />
-                    </TooltipItem>
-                  </div>
+                      {/* labels goes hear */}
+                      <div className="flex flex-wrap mt-1 ">
+                        {each.label.map((each1) => {
+                          if (each1.isChecked) {
+                            return (
+                              <button
+                                key={each1.id}
+                                className="transition-all text-xs text-black/70 font-bold m-1 px-3 rounded-full bg-black/15 relative"                                                        
+                                value={each1.name}
+                                onMouseEnter={() =>
+                                  mouseOverfnForLabel(true, `${each.id}+${each1.id}`)
+                                }
+                                onMouseLeave={() =>
+                                  mouseOverfnForLabel(false, `${each.id}+${each1.id}`)
+                                }
+                              >
+                                <div className="flex">
+                                  <div
+                                    id={`${each.id}+${each1.id}text`}
+                                    className={`transition-all py-1 opacity-100`}
+                                  >
+                                    {each1.name}
+                                  </div>
+                                  <div
+                                    onClick={(e) =>
+                                      deletelabelBtn(e, each.id, each1.id)
+                                    }
+                                    id={`${each.id}+${each1.id}closeBtn`}
+                                    className={`transition-all  absolute opacity-0 right-0  p-1 mr-0 
+                                                                bg-transparent w-full text-center rounded-full`}
+                                  >
+                                    &#x2715;
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          }
+                        })}
+                      </div>
 
-                  <div
-                    id={`${each.id}moreOptionDiv`}
-                    className="relative"
-                    onClick={(event) => moreOptionButton(event, each.id)}
-                  >
-                    <TooltipItem position="bottom" tooltipsText="More">
-                      <Icon
-                        icon="icon-park-outline:more-four"
-                        color="#4a5568"
-                        height={18}
-                      />
-                    </TooltipItem>
+                      {/* all the icons are hear */}
+                      <div
+                        onClick={(e) => e.stopPropagation()}
+                        id={`${each.id}iconDiv`}
+                        className={`amazingIconDiv active:border flex mt-1 items-center justify-center bg-white rounded-md px-2 pt-1 opacity-0 transition-all
+                      `}
+                      >
+                        <div className="mr-5 ">
+                          <TooltipItem position="bottom" tooltipsText="Remind me">
+                            <Icon icon="bx:bell-plus" color="#4a5568" height={18} />
+                          </TooltipItem>
+                        </div>
+                        <div
+                          id="sakib"
+                          className="mr-5 relative"
+                          onClick={(event) => BGOptionButton(event)}
+                        >
+                          <TooltipItem
+                            position="bottom"
+                            tooltipsText="Background options"
+                          >
+                            <Icon
+                              icon="tabler:color-filter"
+                              color="#4a5568"
+                              height={18}
+                            />
+                          </TooltipItem>
+                        </div>
+                        <div
+                          className="mr-5"
+                        >
+                          <TooltipItem position="bottom" tooltipsText="Add image">
+                            <label className="" htmlFor="addImg">
+                              <Icon
+                                icon="fluent:image-24-regular"
+                                color="#4a5568"
+                                height={18}
+                              />
+                            </label>
+                            <AddImg for1={"note"} noteID={id} />
+                          </TooltipItem>
+                        </div>
+
+                        <div
+                          onClick={() => {
+                            dispatch(archiveNote(each.id));
+                          }}
+                          className={`mr-5 ${each.archive === true ? 'bg-black' : "bg-white"}`}
+                        >
+                          <TooltipItem position="bottom" tooltipsText="Archive">
+                            <Icon
+
+                              icon="bi:archive"
+                              color="#4a5568"
+                              height={18} />
+                          </TooltipItem>
+                        </div>
+
+                        <div
+                          id={`${each.id}moreOptionDiv`}
+                          className="relative"
+                          onClick={(event) => moreOptionButton(event, each.id)}
+                        >
+                          <TooltipItem position="bottom" tooltipsText="More">
+                            <Icon
+                              icon="icon-park-outline:more-four"
+                              color="#4a5568"
+                              height={18}
+                            />
+                          </TooltipItem>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          ))}
+                )
+              }
+
+            }
+          })}
         </div>
       </div>
       {toggleValue0 && (

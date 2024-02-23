@@ -1,12 +1,15 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router'
+import Header from "../1.components/Header/Header";
+import LeftSideBar from '../1.components/sidebaar/LeftSideBar';
 
 function Layout() {
 
   return (
     <>
-    <Outlet/>
-    
+      <LeftSideBar/>
+      {/* <Header /> */}
+      <Outlet />
     </>
   )
 }

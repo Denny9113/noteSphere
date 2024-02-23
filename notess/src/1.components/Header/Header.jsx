@@ -5,15 +5,15 @@ import Logo from './logo/Logo';
 
 function Header() {
     return (
-        <div className=' w-full z-99 top-0 border-b fixed px-4 py-1 flex justify-between 
+        <div className=' w-full  top-0 border-b fixed z-99 px-4 py-1 flex justify-between 
         items-center bg-white '>
             {/* left side */}
             <div className=' flex items-center  h-14'>
-                <div className='rounded-full p-1'>
+                {/* <div className='rounded-full p-1'>
                     <TooltipItem position="bottom" tooltipsText="Main menu">
                         <Icon icon="mdi:menu" color='#4a5568' width={24} />
                     </TooltipItem>
-                </div>
+                </div> */}
                 <div className='ml-10'>
                     {/* <Icon icon="emojione-v1:note-pad" width={49} /> */}
                     <Logo width={24}/>

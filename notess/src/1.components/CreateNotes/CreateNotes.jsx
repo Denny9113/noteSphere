@@ -147,18 +147,16 @@ function CreateNotes(props) {
           <div
             className={`
                         grid grid-cols-1 gap-1 h-auto bg-transparent 
-                        ${Img.length > 0 ? "mb-3" : null}
+                        ${Img.length > 1 ? "mb-3" : null}
                         sm:grid-cols-2 
                         md:grid-cols-3 
                         lg:grid-cols-4`}
             style={{
               gridAutoRows: "minmax(100px, auto)",
-              gridTemplateColumns: `repeat(auto-fill, minmax(${
-                Img.length === 2 ? "275px" : "200px"
-              }, 1fr))`,
+              gridTemplateColumns: `repeat(auto-fill, minmax(${Img.length === 2 ? "275px" : "200px"}, 1fr))`
             }}
           >
-            {Img.filter((i) => i.id !== "first").map((each, index) => {
+            {Img.filter((i) => i.id).map((each, index) => {
               if (each.id !== 1) {
                 return (
                   <div key={index} className="overflow-hidden">

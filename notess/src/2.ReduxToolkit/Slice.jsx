@@ -109,6 +109,19 @@ export const notesSlice = createSlice({
       }
     },
 
+    handleCheckboxAccordingToNote: (state, action) => {
+      const payload = action.payload
+      state.clickValue.map((note, index) => {
+        if (note.id === payload) {
+          note.label.map((label, index) => {
+            if (label.id === state.label[index].id) {
+              state.label[index].isChecked = label.isChecked;
+            }
+          })
+        }
+      })
+    },
+
     addImg: (state, action) => {
       // payload has: id, img, for, noteID,
       let payload = action.payload;
@@ -138,11 +151,13 @@ export const notesSlice = createSlice({
         });
       }
       if (payload.for === "notes") {
-        state.clickValue.forEach((eachO) => {
-          if (eachO.id === payload.noteID) {
-            eachO.label.forEach((each) => {
-              if (each.id === payload.id) {
-                each.isChecked = !each.isChecked;
+        state.clickValue.forEach((note) => {
+          if (note.id === payload.noteID) {
+
+            note.label.forEach((label) => {
+              if (label.id === payload.id) {
+                // label.isChecked = !label.isChecked;
+                note.label = note.label.filter((f) => f.id !== payload.id)
               }
             });
             return;
@@ -198,6 +213,7 @@ export const {
   addImg,
   handleCheckboxChange,
   archiveNote,
+  handleCheckboxAccordingToNote,
   deleteLabels,
   deleteImg,
   deleteImgForNote,

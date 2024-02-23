@@ -37,11 +37,6 @@ function AddImg({ props, for1, noteID }) {
     setImage([]);
   };
 
-  useEffect(() => {
-    console.log(noteID);
-  }, ['from AddImg: ',noteID])
-  
-
   return (
     <>
       <input

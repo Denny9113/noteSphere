@@ -1,6 +1,6 @@
 import React, { useEffect, useState, forwardRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteNote, toggleValue, addLabel, handleCheckboxChange } from "../../2.ReduxToolkit/Slice";
+import { deleteNote, toggleValue, addLabel, handleCheckboxChange, handleCheckboxAccordingToNote } from "../../2.ReduxToolkit/Slice";
 import { nanoid } from "@reduxjs/toolkit";
 
 function MoreOption({ for1, noteID }) {
@@ -12,15 +12,16 @@ function MoreOption({ for1, noteID }) {
     const toggleValue0 = useSelector((state) => state.clickToShow.toggleValue);
     const labelArry = useSelector((state) => state.clickToShow.label);
 
-
     const deleteBtn = () => {
         dispatch(deleteNote(idForNote))
         dispatch(toggleValue(false))
     }
 
     const lableBtn = () => {
-        editlable ? SetEditlable(false) : SetEditlable(true)
+        SetEditlable(true);
+        dispatch(handleCheckboxAccordingToNote(noteID))
     }
+
 
     const addLabelLocal = (e) => {
         if (lableValue && !labelArry.some((each) => each && each.name === lableValue)) {
@@ -85,25 +86,27 @@ function MoreOption({ for1, noteID }) {
                             <div className="flex flex-col items-start mt-1">
                                 {labelArry.map((each, index) => {
                                     if (each && each.name) {
-                                        return (<li key={each.id}>
-                                            <label htmlFor={each.id}
-                                                className=" text-[0.9rem] mb-1 cursor-pointer "
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    id={each.id}
-                                                    value={each.name}
-                                                    checked={each.isChecked}
-                                                    onChange={() => dispatch(handleCheckboxChange({
-                                                        id: each.id,
-                                                        noteID: noteID,
-                                                        for: for1
-                                                    }))}
-                                                    className="mr-2 accent-gray-500"
-                                                />
-                                                {each.name}
-                                            </label>
-                                        </li>)
+                                        return (
+                                            <li key={each.id}>
+                                                <label htmlFor={each.id}
+                                                    className=" text-[0.9rem] mb-1 cursor-pointer "
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        id={each.id}
+                                                        value={each.name}
+                                                        checked={each.isChecked}
+                                                        onChange={() => dispatch(handleCheckboxChange({
+                                                            id: each.id,
+                                                            noteID: noteID,
+                                                            for: for1
+                                                        }))}
+                                                        className="mr-2 accent-gray-500"
+                                                    />
+                                                    {each.name}
+                                                </label>
+                                            </li>
+                                        )
                                     }
                                 })}
 
